@@ -4,11 +4,13 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import Spinner from "./Spinner";
 
 const Form = ({ refetch }) => {
   const [sector, setSector] = useState("");
   const [sectorError, setSectorError] = useState("");
   const [isAgree, setIsAgree] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { data: sectors, isLoading } = useQuery(["sectors"], async () => {
     const res = await axios.get("https://task-server-chi.vercel.app/sectors");
@@ -27,6 +29,9 @@ const Form = ({ refetch }) => {
       return setSectorError("Sector is required");
     }
 
+    // started loading
+    setLoading(true);
+
     axios
       .post("https://task-server-chi.vercel.app/users", {
         name: data.name,
@@ -37,6 +42,7 @@ const Form = ({ refetch }) => {
         refetch();
         reset();
         toast.success("Successfully become a user");
+        setLoading(false);
         console.log(res);
       });
   };
@@ -97,7 +103,7 @@ const Form = ({ refetch }) => {
                 isAgree ? "bg-blue-500" : "bg-blue-200"
               }`}
             >
-              Save
+              {loading ? <Spinner /> : "Save"}
             </button>
           </form>
         </div>
